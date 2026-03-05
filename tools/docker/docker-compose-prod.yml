@@ -1,0 +1,20 @@
+services:
+  frontend:
+    container_name: frontend
+    build:
+      context: ../../frontend
+      target: prod
+#      args:
+#        - VITE_CRYPTO_KEY: ${CRYPTO_KEY}
+#        - VITE_API_BASE: ${API_BASE}
+#    environment:
+#      VITE_CRYPTO_KEY: ${CRYPTO_KEY}
+#      VITE_API_BASE: ${API_BASE_PROD}
+    ports:
+      - "80:80"
+    working_dir: /app
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 128M

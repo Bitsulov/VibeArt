@@ -1,6 +1,6 @@
 services:
   frontend:
-    container_name: frontend
+    container_name: frontend-prod
     build:
       context: ../../frontend
       target: prod
@@ -10,9 +10,10 @@ services:
 #    environment:
 #      VITE_CRYPTO_KEY: ${CRYPTO_KEY}
 #      VITE_API_BASE: ${API_BASE_PROD}
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "80:80"
-    working_dir: /app
     restart: unless-stopped
     deploy:
       resources:

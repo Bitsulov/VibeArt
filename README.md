@@ -8,7 +8,7 @@ This project is containerized with Docker. Make sure you have Docker and Docker 
 ### 1. Clone the repository
 Since this project uses submodules for frontend and backend:
 ```bash
-git clone --recursive [https://github.com/Bitsulov/VibeArt.git](https://github.com/Bitsulov/VibeArt.git)
+git clone --recursive https://github.com/Bitsulov/VibeArt.git
 cd VibeArt
 ```
 

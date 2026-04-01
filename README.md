@@ -1,47 +1,75 @@
 # VibeArt
-Social network for creative people where they can share their creativity.
 
-## Run
+Социальная сеть для творческих людей — место, где можно делиться своим творчеством.
 
-This project is containerized with Docker. Make sure you have Docker and Docker Compose installed.
+## Стек технологий
 
-### 1. Clone the repository
-Since this project uses submodules for frontend and backend:
+**Frontend:**
+- TypeScript
+- React 19
+- Vite
+- SCSS Modules
+- Redux Toolkit
+- TanStack Query
+- React Router v7
+- Axios
+- i18n
+- Vitest
+- Playwright
+
+**Backend** _(в разработке):_
+- Java
+- Spring Boot
+
+**Инфраструктура:**
+- Docker
+- Docker Compose
+- Nginx
+
+## Быстрый старт
+
+### 1. Клонирование
+
+Проект использует git submodules для frontend и backend:
+
 ```bash
 git clone --recursive [https://github.com/Bitsulov/VibeArt.git](https://github.com/Bitsulov/VibeArt.git)
 cd VibeArt
 ```
 
-### 2. Run the application 
-Development Mode (Hot-reload, Vite dev server):
+Если уже склонировали без `--recursive`:
+
+```bash
+git submodule update --init --recursive
 ```
+
+### 2. Запуск
+
+**Режим разработки** — hot-reload, Vite dev server на порту `5173`:
+
+```bash
 docker compose -p vibeart-dev -f tools/docker/docker-compose-dev.yml up -d
 ```
-Production Mode (Optimized build, Nginx proxy):
-```
+
+**Продакшн** — оптимизированный билд, Nginx на порту `80`:
+
+```bash
 docker compose -p vibeart-prod -f tools/docker/docker-compose-prod.yml up -d
 ```
 
-## Technologies & Infrastructure
-Containers:
-1. Frontend: React 19 SPA served by Nginx (in prod).
-2. Backend: (Coming soon) - Spring boot framework (Java).
+## Структура репозитория
 
-**Frontend Stack**:
-- TypeScript,
-- React 19,
-- Vite
-- SCSS
-- CSS Modules
-- Redux Toolkit,
-- Axios
-- TanStack Query (React Query)
-- I18n
+```
+VibeArt/
+├── frontend/          # React SPA (git submodule)
+├── backend/           # Spring Boot (git submodule, ожидается)
+└── tools/
+    └── docker/        # Docker Compose файлы, Nginx конфиги
+```
 
-## Project Structure
-- `frontend/` — React application source code.
-- `tools/docker/` — Docker configurations, Compose files, configs, volumes.
+## Подмодули
 
-## Links
-- [Vibeart Frontend](https://github.com/Bitsulov/VibeArt-frontend.git) - frontend repository
-- [Vibeart BackEnd](https://github.com/Bitsulov/vibeart-backend.git) - backend repository
+| Подмодуль   | Репозиторий                                                                     |
+|-------------|---------------------------------------------------------------------------------|
+| `frontend/` | [VibeArt-frontend](https://github.com/Bitsulov/VibeArt-frontend)                |
+| `backend/`  | [VibeArt-backend](https://github.com/Bitsulov/vibeart-backend) *(в разработке)* |

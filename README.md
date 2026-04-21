@@ -33,7 +33,7 @@
 Проект использует git submodules для frontend и backend:
 
 ```bash
-git clone --recursive [https://github.com/Bitsulov/VibeArt.git](https://github.com/Bitsulov/VibeArt.git)
+git clone --recursive https://github.com/Bitsulov/VibeArt.git
 cd VibeArt
 ```
 

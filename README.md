@@ -7,11 +7,11 @@
 **Frontend:**
 - TypeScript
 - React 19
+- React Router v7 (SPA + SSR)
 - Vite
 - SCSS Modules
 - Redux Toolkit
 - TanStack Query
-- React Router v7
 - Axios
 - i18n
 - Vitest
@@ -43,25 +43,41 @@ cd VibeArt
 git submodule update --init --recursive
 ```
 
-### 2. Запуск
+### 2. Переменные окружения
 
-**Режим разработки** — hot-reload, Vite dev server на порту `5173`:
+Скопируй `.env.example` в `.env` и заполни переменные:
+
+| Переменная      | Описание                                   |
+|-----------------|--------------------------------------------|
+| `URL_DEV`       | Публичный URL для режима разработки        |
+| `URL_PROD`      | Публичный URL для производственной среды   |
+| `API_BASE_DEV`  | Базовый URL API для режима разработки      |
+| `API_BASE_PROD` | Базовый URL API для производственной среды |
+| `EMAIL`         | Контактный email, отображаемый на сайте    |
 
 ```bash
-docker compose -p vibeart-dev -f tools/docker/docker-compose-dev.yml up -d
+cp .env.example .env
 ```
 
-**Продакшн** — оптимизированный билд, Nginx на порту `80`:
+### 3. Запуск
+
+**Режим разработки** — frontend-контейнер с hot-reload на порту `5173`:
 
 ```bash
-docker compose -p vibeart-prod -f tools/docker/docker-compose-prod.yml up -d
+docker compose -p vibeart-dev -f tools/docker/docker-compose-dev.yml --env-file .env up -d --build
+```
+
+**Производственная среда** — frontend-контейнер + Nginx-контейнер на порту `80`:
+
+```bash
+docker compose -p vibeart -f tools/docker/docker-compose-prod.yml --env-file .env up -d --build
 ```
 
 ## Структура репозитория
 
 ```
 VibeArt/
-├── frontend/          # React SPA (git submodule)
+├── frontend/          # React SPA + SSR (git submodule)
 ├── backend/           # Spring Boot (git submodule, ожидается)
 └── tools/
     └── docker/        # Docker Compose файлы, Nginx конфиги

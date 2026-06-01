@@ -19,7 +19,7 @@
 
 ## Структура проекта
 
-- `frontend/` — React 19 SPA (подмодуль → VibeArt-frontend)
+- `frontend/` — React 19 SPA + SSR (подмодуль → VibeArt-frontend)
 - `backend/` — Spring Boot / Java (подмодуль → ожидается)
 - `tools/docker/` — Docker Compose файлы и Nginx конфиги
 
@@ -32,9 +32,9 @@ cd VibeArt
 docker compose -p vibeart-dev -f tools/docker/docker-compose-dev.yml up -d
 ```
 
-Продакшн (оптимизированный билд, Nginx):
+Производственная среда (frontend-контейнер + Nginx-контейнер на порту 80):
 ```bash
-docker compose -p vibeart-prod -f tools/docker/docker-compose-prod.yml up -d
+docker compose -p vibeart -f tools/docker/docker-compose-prod.yml --env-file .env up -d --build
 ```
 
 ## Git Workflow

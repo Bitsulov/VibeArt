@@ -17,9 +17,15 @@
 - Vitest
 - Playwright
 
-**Backend** _(в разработке):_
+**API** _(в разработке):_
 - Java
 - Spring Boot
+
+**Email-service:**
+- Java 25
+- Spring Boot 4.0
+- Spring AMQP (RabbitMQ)
+- Spring Mail
 
 **Инфраструктура:**
 - Docker
@@ -30,7 +36,7 @@
 
 ### 1. Клонирование
 
-Проект использует git submodules для frontend и backend:
+Проект использует git submodules:
 
 ```bash
 git clone --recursive https://github.com/Bitsulov/VibeArt.git
@@ -47,13 +53,26 @@ git submodule update --init --recursive
 
 Скопируй `.env.example` в `.env` и заполни переменные:
 
-| Переменная      | Описание                                   |
-|-----------------|--------------------------------------------|
-| `URL_DEV`       | Публичный URL для режима разработки        |
-| `URL_PROD`      | Публичный URL для производственной среды   |
-| `API_BASE_DEV`  | Базовый URL API для режима разработки      |
-| `API_BASE_PROD` | Базовый URL API для производственной среды |
-| `EMAIL`         | Контактный email, отображаемый на сайте    |
+| Переменная                 | Описание                                  |
+|----------------------------|---------------------------------------------|
+| `URL`                      | Публичный URL сайта                          |
+| `API_BASE`                 | Базовый URL API сервиса                      |
+| `SUPPORT_EMAIL`            | Контактный email, отображаемый на сайте      |
+| `EMAIL_PASSWORD`           | Пароль почтового аккаунта для email-service  |
+| `CRYPTO_KEY`               | Ключ шифрования для frontend                 |
+| `DB_NAME`                  | Имя базы данных Postgres                     |
+| `DB_URL`                   | Адрес базы данных для main-service           |
+| `DB_USERNAME`              | Имя пользователя базы данных                 |
+| `DB_PASSWORD`              | Пароль пользователя базы данных              |
+| `RABBIT_MQ_HOST`           | Хост RabbitMQ                                |
+| `RABBIT_MQ_USERNAME`       | Имя пользователя RabbitMQ                    |
+| `RABBIT_MQ_PASSWORD`       | Пароль пользователя RabbitMQ                 |
+| `RABBIT_MQ_VHOST`          | Virtual host RabbitMQ                        |
+| `JWT_SECRET_KEY`           | Секретный ключ для подписи JWT               |
+| `JWT_ACCESS_TIME`          | Время жизни access-токена (мс)               |
+| `JWT_REFRESH_TIME`         | Время жизни refresh-токена (мс)              |
+| `PGADMIN_DEFAULT_EMAIL`    | Email для входа в pgAdmin                    |
+| `PGADMIN_DEFAULT_PASSWORD` | Пароль для входа в pgAdmin                   |
 
 ```bash
 cp .env.example .env
@@ -61,13 +80,7 @@ cp .env.example .env
 
 ### 3. Запуск
 
-**Режим разработки** — frontend-контейнер с hot-reload на порту `5173`:
-
-```bash
-docker compose -p vibeart-dev -f tools/docker/docker-compose-dev.yml --env-file .env up -d --build
-```
-
-**Производственная среда** — frontend-контейнер + Nginx-контейнер на порту `80`:
+Для запуска необходим docker-compose:
 
 ```bash
 docker compose -p vibeart -f tools/docker/docker-compose-prod.yml --env-file .env up -d --build
@@ -75,17 +88,15 @@ docker compose -p vibeart -f tools/docker/docker-compose-prod.yml --env-file .en
 
 ## Структура репозитория
 
-```
-VibeArt/
-├── frontend/          # React SPA + SSR (git submodule)
-├── backend/           # Spring Boot (git submodule, ожидается)
-└── tools/
-    └── docker/        # Docker Compose файлы, Nginx конфиги
-```
+- `frontend/` — React SPA + SSR (git submodule)
+- `main-service/` — Spring Boot API (git submodule)
+- `email-service/` — сервис отправки email (git submodule)
+- `tools/docker/` — Docker Compose файл, Nginx конфиг
 
 ## Подмодули
 
-| Подмодуль   | Репозиторий                                                                     |
-|-------------|---------------------------------------------------------------------------------|
-| `frontend/` | [VibeArt-frontend](https://github.com/Bitsulov/VibeArt-frontend)                |
-| `backend/`  | [VibeArt-backend](https://github.com/Bitsulov/vibeart-backend) *(в разработке)* |
+| Подмодуль        | Репозиторий                                                                |
+|------------------|----------------------------------------------------------------------------|
+| `frontend/`      | [VibeArt-web-frontend](https://github.com/Bitsulov/vibeart-web-frontend)   |
+| `main-service/`  | [VibeArt-api-service](https://github.com/Bitsulov/vibeart-service-api)     |
+| `email-service/` | [VibeArt-email-service](https://github.com/Bitsulov/vibeart-service-email) |

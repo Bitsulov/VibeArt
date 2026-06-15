@@ -91,7 +91,7 @@ docker compose -p vibeart -f tools/docker/docker-compose-prod.yml --env-file .en
 - `frontend/` — React SPA + SSR (git submodule)
 - `main-service/` — Spring Boot API (git submodule)
 - `email-service/` — сервис отправки email (git submodule)
-- `tools/docker/` — Docker Compose файл, Nginx конфиг
+- `tools/docker/` — Docker Compose файл, конфиги Nginx и pgAdmin, docker volumes
 
 ## Подмодули
 

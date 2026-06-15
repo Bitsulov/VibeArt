@@ -5,10 +5,10 @@ services:
       context: ../../frontend
       target: prod
       args:
-#        - VITE_CRYPTO_KEY=${CRYPTO_KEY}
-        - VITE_URL=${URL_PROD}
-        - VITE_API_BASE=${API_BASE_PROD}
-        - VITE_EMAIL=${EMAIL}
+        - VITE_CRYPTO_KEY=${CRYPTO_KEY}
+        - VITE_URL=${URL}
+        - VITE_API_BASE=${API_BASE}
+        - VITE_EMAIL=${SUPPORT_EMAIL}
     restart: unless-stopped
     deploy:
       resources:
@@ -29,3 +29,114 @@ services:
       resources:
         limits:
           memory: 64M
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBIT_MQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_MQ_PASSWORD}
+    volumes:
+      - ./rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  email-service:
+    container_name: email-service
+    build:
+      context: ../../email-service
+      dockerfile: Dockerfile
+    environment:
+      SUPPORT_EMAIL: ${SUPPORT_EMAIL}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      RABBIT_MQ_HOST: ${RABBIT_MQ_HOST}
+      RABBIT_MQ_USERNAME: ${RABBIT_MQ_USERNAME}
+      RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
+      RABBIT_MQ_VHOST: ${RABBIT_MQ_VHOST}
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  postgres:
+    image: postgres:18.4-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -h localhost -p 5432" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - ./pgdata:/var/lib/postgresql
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:9.15.0
+    container_name: pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_SERVER_JSON_FILE: /tmp/servers.json
+      DB_NAME: ${DB_NAME}
+      DB_USERNAME: ${DB_USERNAME}
+    entrypoint: ["/bin/sh", "-c", "sed -e 's/$${DB_NAME}/'\"$$DB_NAME\"'/g' -e 's/$${DB_USERNAME}/'\"$$DB_USERNAME\"'/g' /pgadmin4/servers.json.template > /tmp/servers.json && exec /entrypoint.sh"]
+    volumes:
+      - ./pgadmin/servers.json.template:/pgadmin4/servers.json.template:ro
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  main-service:
+    container_name: api-service
+    build:
+      context: ../../main-service
+      dockerfile: Dockerfile
+    volumes:
+      - ./logs/vibeart-api.log:/app/logs/vibeart-api.log
+      - ./logs/archive:/app/logs/archive
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ACCESS_TIME: ${JWT_ACCESS_TIME}
+      JWT_REFRESH_TIME: ${JWT_REFRESH_TIME}
+      RABBIT_MQ_HOST: ${RABBIT_MQ_HOST}
+      RABBIT_MQ_USERNAME: ${RABBIT_MQ_USERNAME}
+      RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
+      RABBIT_MQ_VHOST: ${RABBIT_MQ_VHOST}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+#      redis:
+#        condition: service_started
+#      logstash:
+#        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+volumes:
+  rabbitmq_data:
+  pgdata:

@@ -32,3 +32,11 @@
 **/*.png
 **/*.jpg
 **/*.mp4
+
+# Containers data
+tools/docker/*
+!tools/docker/docker-compose-prod.yml
+!tools/docker/pgadmin/
+!tools/docker/pgadmin/*
+!tools/docker/nginx
+!tools/docker/nginx/*

@@ -40,3 +40,10 @@ temp/
 
 memory
 memory/*
+
+tools/docker/*
+!tools/docker/docker-compose-prod.yml
+!tools/docker/pgadmin/
+!tools/docker/pgadmin/*
+!tools/docker/nginx
+!tools/docker/nginx/*

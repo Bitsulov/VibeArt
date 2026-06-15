@@ -1,3 +1,9 @@
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/Bitsulov/vibeart-frontend.git
+[submodule "email-service"]
+	path = email-service
+	url = https://github.com/Bitsulov/vibeart-service-email
+[submodule "main-service"]
+	path = main-service
+	url = https://github.com/Bitsulov/vibeart-service-api

@@ -31,7 +31,7 @@ services:
           memory: 64M
 
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:4.3.2-management
     container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBIT_MQ_USERNAME}
@@ -39,6 +39,8 @@ services:
     volumes:
       - ./rabbitmq_data:/var/lib/rabbitmq
     restart: unless-stopped
+    ports:
+      - "15672:15672"
     deploy:
       resources:
         limits:
@@ -52,6 +54,9 @@ services:
     environment:
       SUPPORT_EMAIL: ${SUPPORT_EMAIL}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      EMAIL_HOST: ${EMAIL_HOST}
+      EMAIL_PORT: ${EMAIL_PORT}
+      EMAIL_TLS: ${EMAIL_TLS}
       RABBIT_MQ_HOST: ${RABBIT_MQ_HOST}
       RABBIT_MQ_USERNAME: ${RABBIT_MQ_USERNAME}
       RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
@@ -104,6 +109,22 @@ services:
         limits:
           memory: 256M
 
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: minio
+    restart: unless-stopped
+    volumes:
+      - minio-storage:/data
+      - minio-config:/root/.minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_USERNAME}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD}
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
+    ports:
+      - "9001:9001"
+    # server - режим сервера, /data - где хранить данные, 9001 - порт веб консоли
+    command: server /data --console-address ":9001"
+
   main-service:
     container_name: api-service
     build:
@@ -123,6 +144,11 @@ services:
       RABBIT_MQ_USERNAME: ${RABBIT_MQ_USERNAME}
       RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
       RABBIT_MQ_VHOST: ${RABBIT_MQ_VHOST}
+      MINIO_URL: ${MINIO_URL}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
+      MINIO_USERNAME: ${MINIO_USERNAME}
+      MINIO_PASSWORD: ${MINIO_PASSWORD}
+      MINIO_BUCKETNAME: ${MINIO_BUCKETNAME}
     depends_on:
       postgres:
         condition: service_healthy
@@ -140,3 +166,5 @@ services:
 volumes:
   rabbitmq_data:
   pgdata:
+  minio-config:
+  minio-storage:
